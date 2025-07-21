@@ -1,10 +1,11 @@
-% ociamthesis
+% µthesis
 % 
+% Based on ociamthesis
 % Originally by Keith A. Gillow (gillow@maths.ox.ac.uk), 1997
 % Modified by Sam Evans (sam@samuelevansresearch.org), 2007
 % Modified by John McManigle (john@oxfordechoes.com), 2015
 %
-% This version Copyright (c) 2015-2017 John McManigle
+% Copyright (c) 2025 Daniel Dorfmeister
 %
 % Broad permissions are granted to use, modify, and distribute this software
 % as specified in the MIT License included in this distribution's LICENSE file.
@@ -12,11 +13,11 @@
 %
 %-------------------------- identification ---------------------
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{ociamthesis}[2015/04/30 Oxford thesis class]
+\ProvidesClass{µthesis}[2025/07/18 µCSRL PhD thesis class]
 %-------------------------- initial code -----------------------
 
 % JEM: Defaults to one-side, but passing 'twoside' should set everything up for that
-\LoadClass[openright,12pt]{report}
+\LoadClass[openright,10pt]{report}
 
 \newif\ifmc@nobind
 \mc@nobindfalse
@@ -35,10 +36,9 @@
 \newlength{\textbaselineskip}
 
 \setlength{\singlebaselineskip}{\baselineskip}
-\setlength{\frontmatterbaselineskip}{17pt plus1pt minus1pt}
-\setlength{\textbaselineskip}{22pt plus2pt}
+\setlength{\frontmatterbaselineskip}{15pt plus2pt minus1pt}
+\setlength{\textbaselineskip}{15pt plus2pt minus1pt}
 
-\newcommand{\submittedtext}{{A thesis submitted for the degree of}}
 \usepackage{varwidth}
 \newcommand{\originalitytext}{%
    \rule[-2mm]{1pt}{7mm}\hspace{-1pt}%
@@ -54,25 +54,25 @@
 % construction of the title page and other preamble.
 
 % The year and term the degree will be officially conferred
-\def\degreedate#1{\gdef\@degreedate{#1}}
+\def\submissiondate#1{\gdef\@submissiondate{#1}}
+\def\@submissiondate{}
+\def\acceptancedate#1{\gdef\@acceptancedate{#1}}
+\def\examinationdate#1{\gdef\@examinationdate{#1}}
+% The names of the examiners
+\def\firstexaminer#1{\gdef\@firstexaminer{#1}}
+\def\secondexaminer#1{\gdef\@secondexaminer{#1}}
 % The full (unabbreviated) name of the degree
 \def\degree#1{\gdef\@degree{#1}}
-% The name of your Oxford college (eg Christ Church, Pembroke)
-\def\college#1{\gdef\@college{#1}}
-% Your candidate number (ie for master's submissions)
-\def\candidateno#1{\gdef\@candidateno{#1}}
-% Your word count (for master's submissions)
-\def\wordcount#1{\gdef\@wordcount{#1}}
-\newif\ifmasterssubmission
-% adds candidate number and word count in place of name and college
-\masterssubmissionfalse
-
+% The name of your department
+\def\department#1{\gdef\@department{#1}}
+% The language of the title page, options: de (default), en
+\def\titlelang#1{\gdef\@titlelang{#1}}
 
 %
 % CRESTS
 %
 
-\def\crest{{\includegraphics{figures/beltcrest.pdf}}}
+\def\crest{{\includegraphics{figures/unibw.pdf}}}
 
 
 %
@@ -86,7 +86,7 @@
 \fi
 
 \usepackage{xcolor}
-\usepackage{graphicx} 
+\usepackage{graphicx}
 
 \usepackage{fancyhdr}
 \setlength{\headheight}{15pt}
@@ -115,14 +115,17 @@
 
 \usepackage{microtype}
 \usepackage{nicefrac}
-\usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage{textcomp}
 
 \usepackage{longtable} 
 	% Allows tables to span multiple pages (this package must be called before hyperref)
 
-\usepackage[font=small,labelfont=bf]{caption} 
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{array}
+\captionsetup{format=hang}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
 	% Nicer captions
 
 \usepackage{multicol,multirow,array} 
@@ -139,19 +142,6 @@
 
 \usepackage{xfrac}
 
-%\usepackage{enumerate} 
-	% Allows different numbering styles for Lists
-	% to use:
-	% \begin{enumerate}[x] 
-		% \item text 
-	% \end{enumerate} 
-	% where x is:
-	% A	uppercase letters (as produced by \Alph)
-	% a	lowercase letters (as produced by \alph)
-	% I	uppercase roman numerals (as produced by \Roman)
-	% i	lowercase roman numerals (as produced by \roman)
-	% 1	arabic numbers (as produced by \arabic)
-	
 % JEM the following package allows changing spacing in lists (for acknowledgements)
 \usepackage{enumitem}
 
@@ -165,17 +155,17 @@
 	% To format the bibliography	
 
 
-\usepackage[colorlinks=false,pdfpagelabels]{hyperref} 
+\usepackage[pdfpagelabels,hidelinks,pdfusetitle]{hyperref}
 	% for linking between references, figures, TOC, etc in the pdf document
 
 \usepackage[nohints,tight]{minitoc} 
+        \renewcommand{\mtcSfont}{\small}
 	\setcounter{minitocdepth}{2} 
 	% Generates mini tables of contents per chapter
 	
 % JEM: The following fixes minitoc to not be multiple-spaced.
 \let\oldmtc@verse\mtc@verse
 \renewcommand{\mtc@verse}[1]{\oldmtc@verse{#1}\setlength{\baselineskip}{\z@}}
-
 
 %
 % Environments
@@ -192,51 +182,41 @@
        {\if@restonecol\twocolumn
        \else\newpage\thispagestyle{empty}\fi}
 
-
-%define title page layout
+% TITLE PAGE
+%
+% Defines title page layout according to "Promotionsordnung 2023":
+% https://www.rz.unibw-muenchen.de/studium/pruefungsamt/formulare/copy_of_formulare-1
 
 \renewcommand{\maketitle}{%
 \begin{alwayssingle}\null
-    \renewcommand{\footnotesize}{\small}
-    \renewcommand{\footnoterule}{\relax}
-    \thispagestyle{empty}
-\ifmasterssubmission
+  \renewcommand{\footnotesize}{\small}
+  \renewcommand{\footnoterule}{\relax}
+  \thispagestyle{empty}
   \begin{center}
-  \vspace*{-3ex}
-    { \LARGE {\bfseries {\@title}} \par}
-{\large \vspace*{25mm} {\crest \par} \vspace*{20mm}}
-    {{\Large Candidate no.\ \@candidateno} \par}
-{\large \vspace*{1ex}
-    {Word count: {\@wordcount} \par}
-\vspace*{4ex}
-    {{\submittedtext} \par}
-\vspace*{1ex}
-    {\it {\@degree} \par}
-\vspace*{6ex}
-	{{\originalitytext} \par}
-\vspace*{2ex}
-    {\@degreedate}}
+    {\LARGE\bfseries \@title \par}
+    \vspace*{16ex}
+    \crest \par
+    \vspace*{16ex}
+    {\Large \@author \par}
+    \vspace*{16ex}
+    Vollständiger Abdruck der von der Fakultät für \@department{} der Universität der Bundeswehr München zur Erlangung des akademischen Grades eines \par
+    \vspace*{2ex}
+    {\large\it \@degree \par}
+    \vspace*{2ex}
+    angenommenen Dissertation. \par
+    \vspace*{8ex}
+    {\large Gutachter: \par
+      1. \@firstexaminer \par
+      2. \@secondexaminer \par}
+    \vspace*{8ex}
+    \ifx\@submissiondate\@empty\else
+    {\small Die Dissertation wurde am \@submissiondate{} bei der Universität der Bundeswehr München \par
+    eingereicht und durch die Fakultät für \@department{} am \@acceptancedate{} angenommen. \par
+    Die mündliche Prüfung fand am \@examinationdate{} statt.}
+    \fi
   \end{center}
-\else
-  \begin{center}
-    { \LARGE {\bfseries {\@title}} \par}
-{\large \vspace*{30mm} {\crest \par} \vspace*{25mm}}
-    {{\Large \@author} \par}
-{\large \vspace*{1ex}
-    {{\@college} \par}
-\vspace*{1ex}
-    {University of Oxford \par}
-\vspace*{20mm}
-    {{\submittedtext} \par}
-\vspace*{1ex}
-    {\it {\@degree} \par}
-\vspace*{2ex}
-    {\@degreedate}}
-  \end{center}
-\fi
   \vfill\null
 \end{alwayssingle}}
-
 
 
 % DEDICATION
@@ -274,41 +254,11 @@
 %i.e. tabbed in at both sides, and on its own page.
 
 \renewenvironment{abstract}%
-{   \begin{alwayssingle}\chapter*{Abstract}
+{   \begin{alwayssingle}\chapter*{\abstractname}
     \thispagestyle{empty}
     \pagestyle{empty}
    \setlength{\baselineskip}{\frontmatterbaselineskip}}
 {\end{alwayssingle}}
-
-%The abstractseparate environment is for running of a page with the abstract
-%on including title and author etc as required to be handed in separately
-
-\newenvironment{abstractseparate} {\newgeometry{margin=3.3cm}\thispagestyle{empty}\begin{alwayssingle}
- \begin{center}
-    {\Large \bfseries \@title \par}
-\ifmasterssubmission
-    {{\large \vspace*{3ex} Candidate no.\ \@candidateno} \par}
-\else
-    {{\large \vspace*{2ex} \@author} \par}
-\fi
-{\large \vspace*{1ex}
-\ifmasterssubmission
-    {Thesis word count: {\@wordcount} \par}
-\else
-    {{\@college} \par}
-    {University of Oxford \par}
-\fi
-\vspace*{1ex}
-    {{\it \submittedtext} \par}
-    {\it {\@degree} \par}
-\vspace*{2ex}
-    {\@degreedate} \par}
-\vfill
-  {\Large \bfseries  Abstract}
-  \end{center}
-\vspace{1ex}
-   \setlength{\baselineskip}{\z@}}
-{\vfill\end{alwayssingle}\restoregeometry}
 
 
 %ROMANPAGES
@@ -372,7 +322,7 @@
    {\end{list}\mtcaddchapter}
 
 
-\usepackage[grey,utopia]{quotchap} 
+\usepackage[grey,utopia]{quotchap}
 	% To put nice quotes at the beginning of the chapters
 
 \usepackage[nottoc]{tocbibind}
@@ -408,13 +358,16 @@
 \renewcommand*\MakeUppercase[1]{##1}\@ldbib{#1}}}
 
 % JEM: for crazy multi character set quotes and Unicode and all
-\usepackage{lmodern}
-\usepackage[LGR,TS1,T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage[greek,latin,english]{babel}
 \usepackage{csquotes}
-\hyphenpenalty=500
-\def\longs{{\fontencoding{TS1}\selectfont s}}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\setotherlanguages{latin}
+% e.g, for simplified Chinese:
+% \setotherlanguages{chinese} % extend list above
+% \newfontfamily\chinesefont[Script=CJK]{Noto Serif CJK SC}
+% usage: \otherlanguage{chinese}北京市\end{otherlanguage}
+%        \begin{chinese}北京市\end{chinese}
+%        \textchinese{北京市}
 
 % JEM: for highlighting corrections
 \newlength{\mccurrentbaselineskip}
@@ -446,3 +399,84 @@
 % JEM: combine all of the commands you run before appendices start
 \newcommand{\startappendices}
   {\appendix\adjustmtc\noappendicestocpagenum\addappheadtotoc\appendixpage}
+
+
+%
+% Acronyms
+%
+
+\usepackage{acro}
+\usepackage{pdfcomment}
+
+\acsetup{
+  pdfcomments/use=true,
+  make-links = true,
+  list/display=all,
+  list/template = tabular
+}
+
+\newcommand{\DeclareAcronymWithTooltip}[3]{%
+  \DeclareAcronym{#1}{%
+    short = #2,
+    long  = #3,
+    pdfcomment = #3
+  }%
+}
+
+%
+% Colors (used on unibw.de)
+%
+
+\definecolor{unibwgray}{HTML}{282828}
+\definecolor{unibworange}{HTML}{ED6600}
+\definecolor{unibwblue}{HTML}{003366}
+% ligther versions
+\colorlet{unibwgraylight}{unibwgray!70}
+\colorlet{unibworangelight}{unibworange!70}
+\colorlet{unibwbluelight}{unibwblue!70}
+
+%
+% Boxed environments
+%
+
+\usepackage[most]{tcolorbox}
+\usepackage{xparse}
+
+% Base style for all boxed environments
+\tcbset{
+  baseboxstyle/.style={
+    enhanced,
+    colframe=gray!50,
+    colback=gray!5,
+    boxrule=0.4pt,
+    arc=1mm,
+    % fontupper=\small,
+    left=2mm, right=2mm, top=1mm, bottom=1mm,
+    before skip=1.5em, after skip=1.5em,
+    breakable,
+    width=\linewidth,
+    fonttitle=\scshape,
+    coltitle=white,
+    fontupper=\setlength{\baselineskip}{\textbaselineskip}
+  }
+}
+
+% Macro: \newboxenv{name}{DisplayName}{Color}
+\NewDocumentCommand{\newboxenv}{mmm}{
+  \newcounter{#1}
+  \NewDocumentEnvironment{#1}{O{}}
+   {
+    \refstepcounter{#1}
+    \tcolorbox[
+      baseboxstyle,
+      colframe=#3,
+      colback=#3!5,
+      title={#2~\csuse{the#1}\IfValueT{##1}{:~##1}},
+    ]
+   }
+   {
+    \endtcolorbox
+   }
+  \crefname{#1}{#1}{#1s}
+  \Crefname{#1}{#2}{#2s}
+}

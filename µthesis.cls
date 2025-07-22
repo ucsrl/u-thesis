@@ -441,6 +441,9 @@
 
 \usepackage[most]{tcolorbox}
 \usepackage{xparse}
+\usepackage[titles]{tocloft}
+\usepackage{etoolbox}
+\usepackage[capitalize,noabbrev,nameinlink]{cleveref}
 
 % Base style for all boxed environments
 \tcbset{
@@ -461,22 +464,41 @@
   }
 }
 
-% Macro: \newboxenv{name}{DisplayName}{Color}
+% Macro: \newboxenv{id}{DisplayName}{Color}
+\makeatletter
 \NewDocumentCommand{\newboxenv}{mmm}{
   \newcounter{#1}
+  \expandafter\def\csname listname@#1\endcsname{List of #2s}
+  \expandafter\newlistof\expandafter{list#1}{#1}{\csname listname@#1\endcsname}
+
   \NewDocumentEnvironment{#1}{O{}}
    {
     \refstepcounter{#1}
+    \def\boxenvlabel{#2~\arabic{#1}}
+    \def\boxenvtitle{\boxenvlabel\IfValueT{##1}{:~##1}}
+    \IfValueTF{##1}
+      {\addcontentsline{#1}{list#1}{\protect\numberline{\arabic{#1}}{##1}}}
+      {\addcontentsline{#1}{list#1}{\protect\numberline{\arabic{#1}}{\boxenvlabel}}}
     \tcolorbox[
       baseboxstyle,
       colframe=#3,
       colback=#3!5,
-      title={#2~\csuse{the#1}\IfValueT{##1}{:~##1}},
+      title=\boxenvtitle,
     ]
    }
    {
     \endtcolorbox
    }
+
   \crefname{#1}{#1}{#1s}
   \Crefname{#1}{#2}{#2s}
+}
+\makeatother
+
+% Macro: \listof{id}
+\NewDocumentCommand{\listof}{m}{
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{\csname listname@#1\endcsname}
+  \csname listoflist#1\endcsname
 }

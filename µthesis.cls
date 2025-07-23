@@ -464,11 +464,11 @@
   }
 }
 
-% Macro: \newboxenv{id}{DisplayName}{Color}
+% Macro: \newboxenv{id}{DisplayName}{DisplayNamePlural}{Color} - e.g., \newboxenv{excursus}{Excursus}{Excursuses}{gray}
 \makeatletter
-\NewDocumentCommand{\newboxenv}{mmm}{
+\NewDocumentCommand{\newboxenv}{mmmm}{
   \newcounter{#1}
-  \expandafter\def\csname listname@#1\endcsname{List of #2s}
+  \expandafter\def\csname listname@#1\endcsname{List of #3}
   \expandafter\newlistof\expandafter{list#1}{#1}{\csname listname@#1\endcsname}
 
   \NewDocumentEnvironment{#1}{O{}}
@@ -481,8 +481,8 @@
       {\addcontentsline{#1}{list#1}{\protect\numberline{\arabic{#1}}{\boxenvlabel}}}
     \tcolorbox[
       baseboxstyle,
-      colframe=#3,
-      colback=#3!5,
+      colframe=#4,
+      colback=#4!5,
       title=\boxenvtitle,
     ]
    }
@@ -490,12 +490,12 @@
     \endtcolorbox
    }
 
-  \crefname{#1}{#1}{#1s}
-  \Crefname{#1}{#2}{#2s}
+  \crefname{#1}{#2}{#3}
+  \Crefname{#1}{#2}{#3}
 }
 \makeatother
 
-% Macro: \listof{id}
+% Macro: \listof{id} - e.g., \listof{excursus}
 \NewDocumentCommand{\listof}{m}{
   \cleardoublepage
   \phantomsection

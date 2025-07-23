@@ -121,9 +121,9 @@
 
 %%%%% BOXED ENVIRONMENTS
 % Some suggestions for boxed environments, see a usage example in Chapter 2.
-\newboxenv{excursion}{Excursion}{unibwgraylight}
-\newboxenv{definition}{Definition}{unibwbluelight}
-\newboxenv{observation}{Observation}{unibworangelight}
+\newboxenv{excursus}{Excursus}{Excursuses}{unibwgraylight}
+\newboxenv{definition}{Definition}{Definitions}{unibwbluelight}
+\newboxenv{observation}{Observation}{Observations}{unibworangelight}
 
 \input{preface/abbreviations}
 
@@ -204,15 +204,16 @@
 % This is where the whole-document ToC appears:
 \tableofcontents
 
-\listof{excursion}
-
-\listoffigures
+\listof{excursus}
 	\mtcaddchapter
 % \mtcaddchapter is needed when adding a non-chapter (but chapter-like) entity to avoid confusing minitoc
 
-% Uncomment to generate a list of tables:
-\listoftables
+\listoffigures
 	\mtcaddchapter
+
+% Uncomment to generate a list of tables:
+% \listoftables
+% 	\mtcaddchapter
 
 %%%%% LIST OF ABBREVIATIONS
 % This example includes a list of abbreviations.  Look at preface/abbreviations.tex to see how that file is formatted.

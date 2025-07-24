@@ -409,9 +409,8 @@
 \usepackage{pdfcomment}
 
 \acsetup{
-  pdfcomments/use=true,
+  pdfcomments/use = true,
   make-links = true,
-  list/display=all,
   list/template = tabular
 }
 
